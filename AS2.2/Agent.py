@@ -25,6 +25,9 @@ class Agent:
             self.current_pos = new_pos
             print("new position", self.current_pos)
 
+    def set_current_pos(self, pos):
+        self.current_pos = pos
+
     def value_iteration(self):
         """
             Iterate through each state and calculate the utility of each state
@@ -54,9 +57,34 @@ class Agent:
                 uncomment to see the utility of all states after each iteration 
                 and also see which action is best in each state.
             """
-            # self.show_utility(iteration)
+            # self.show_values(iteration)
 
-    def show_utility(self, iteration):
+    def temporal_difference(self, lr, discount, epochs):
+        episode = [0, 2, 0, 0, 3, 3]
+        for i in range(epochs):
+            for step in episode:
+                next_state = self.maze.step(self.current_pos, step)
+                if self.maze.states[next_state][2] is False:
+                    c_value = self.maze.states[self.current_pos][1]
+                    reward, next_value = self.maze.states[next_state][0], self.maze.states[next_state][1]
+                    new_value = c_value + lr * (reward + (discount * next_value) - c_value)
+                    self.maze.states[self.current_pos][1] = new_value
+                    self.current_pos = next_state
+                else:
+                    print("terminal state", next_state)
+                    self.set_current_pos((3, 2))
+
+            self.show_values(i + 1)
+
+    def sarsa(self):
+        pass
+
+    """
+        SARSA IS POLICY OPBOUWEN, ALLES Q VALUES BEGINNNE OP 0, VOLG BEREKENING OP CANVAS. VOLG POLICY EPSILON GREEDY
+        SARSA PAKT 2 keer een random keuze, qlearing 1, A wordt bij SARSA A'
+    """
+
+    def show_values(self, iteration):
         """
         Hardcoded print function to show the utility and best action of each state at each iteration
         :param
@@ -74,6 +102,6 @@ class Agent:
             maze[state] = self.maze.states[state][1]
 
         print(maze)
-        print(b_moves)
+        # print(b_moves)
 
 

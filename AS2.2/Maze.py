@@ -47,7 +47,7 @@ class Maze:
         # easy way to get all coordinates using numpy
         for x, y in np.ndindex(maze.shape):
             coord = (x, y)
-            states[coord] = [rewards[x][y], 0, False]
+            states[coord] = [rewards[x][y], 0, False, [0, 0, 0, 0]]
 
         # set terminal states
         states[(0, 3)][2] = True
