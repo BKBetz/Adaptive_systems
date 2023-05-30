@@ -40,7 +40,7 @@ class Policy:
         """
         return rd.choice([0, 1, 2, 3])
 
-    def decide_action(self, state, next_states):
+    def decide_action_utility(self, state, next_states):
         """
         A function for finding the best action using the current position and
         finding the bordering state with the highest utility.
@@ -68,7 +68,21 @@ class Policy:
         action = [k for k, v in self.actions.items() if v == move]
         return action[0]
 
+    def decide_action_value(self, state, epsilon):
+        print(state)
+        if round(rd.random(), 2) <= epsilon:
+            print("rd")
+            choice = rd.choice([0, 1, 2, 3])
+            print("rd choice", choice)
+            return choice
 
+        else:
+            print("greedy")
+            max_action = max(state[3])
+            greedy_action = state[3].index(max_action)
+            print("greedy choice", greedy_action)
+
+            return greedy_action
 
 
 

@@ -16,7 +16,7 @@ class Agent:
         """
         print("current position", self.current_pos)
         next_states = self.maze.get_states(self.current_pos)
-        step = self.policy.decide_action(self.current_pos, next_states)
+        step = self.policy.decide_action_utility(self.current_pos, next_states)
         if step == -1:
             print("Terminal stage reached")
 
@@ -60,10 +60,19 @@ class Agent:
             # self.show_values(iteration)
 
     def temporal_difference(self, lr, discount, epochs):
+        """
+        Evaluate the policy using temporal difference learning
+        :param
+            lr: learning rate
+            discount: the discount
+            epochs: amount of episodes
+        """
+        # the optimal policy episode
         episode = [0, 2, 0, 0, 3, 3]
         for i in range(epochs):
             for step in episode:
                 next_state = self.maze.step(self.current_pos, step)
+                # if state is terminal, episode ends
                 if self.maze.states[next_state][2] is False:
                     c_value = self.maze.states[self.current_pos][1]
                     reward, next_value = self.maze.states[next_state][0], self.maze.states[next_state][1]
@@ -72,12 +81,35 @@ class Agent:
                     self.current_pos = next_state
                 else:
                     print("terminal state", next_state)
+                    # reset agent position back to start position for next episode
                     self.set_current_pos((3, 2))
 
             self.show_values(i + 1)
 
-    def sarsa(self):
-        pass
+    def sarsa(self, lr, discount, epsilon, epochs):
+        """
+        create optimal policy using sarsa on policy control
+        :param
+            lr: learning rate
+            discount: discount
+            epsilon: randomness using epsilon
+            epochs: amount of episodes
+        :return:
+        """
+        c_state = self.maze.states[self.current_pos]
+        action = self.policy.decide_action_value(c_state, epsilon)
+        while c_state[2] is False:
+            next_pos = self.maze.step(self.current_pos, action)
+            next_state = self.maze.states[next_pos]
+            next_action = self.policy.decide_action_value(next_state, epsilon)
+
+
+
+            action = next_action
+            self.current_pos = next_pos
+            c_state = next_state
+
+
 
     """
         SARSA IS POLICY OPBOUWEN, ALLES Q VALUES BEGINNNE OP 0, VOLG BEREKENING OP CANVAS. VOLG POLICY EPSILON GREEDY
@@ -97,7 +129,7 @@ class Agent:
         for state in self.maze.states:
             if not self.maze.states[state][2]:
                 next_states = self.maze.get_states(state)
-                best_move = self.policy.decide_action(state, next_states)
+                best_move = self.policy.decide_action_utility(state, next_states)
                 b_moves[state] = best_move
             maze[state] = self.maze.states[state][1]
 
