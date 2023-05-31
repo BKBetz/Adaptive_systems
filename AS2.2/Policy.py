@@ -1,17 +1,17 @@
 import random as rd
 
-
 class Policy:
     """
         The policy of the agent. contains the value function and a action function
     """
-    def __init__(self):
+    def __init__(self, maze):
         """
         -1 means that there is no better action. Meaning the either:
         1: No states are better than the state that's being used
         2: Reached a terminal state
         """
         self.actions = {0: [-1, 0], 1: [1, 0], 2: [0, -1], 3: [0, 1], -1: [0, 0]}
+        self.maze = maze
 
     def value_func(self, next_states, discount):
         """
@@ -68,19 +68,21 @@ class Policy:
         action = [k for k, v in self.actions.items() if v == move]
         return action[0]
 
-    def decide_action_value(self, state, epsilon):
-        print(state)
-        if round(rd.random(), 2) <= epsilon:
-            print("rd")
+    def decide_action_value(self, pos, state, epsilon):
+        # x% chance to land in epsilon aka random
+        rd_num = round(rd.random(), 2)
+        if rd_num < epsilon:
             choice = rd.choice([0, 1, 2, 3])
-            print("rd choice", choice)
+            next_pos = self.maze.step(pos, choice)
             return choice
 
         else:
-            print("greedy")
+            # get correct action by finding the highest Q value and return correct action
+            # if more than one action have the same max value, pick first
             max_action = max(state[3])
             greedy_action = state[3].index(max_action)
-            print("greedy choice", greedy_action)
+            next_pos = self.maze.step(pos, greedy_action)
+            print(pos, next_pos,  state, greedy_action)
 
             return greedy_action
 

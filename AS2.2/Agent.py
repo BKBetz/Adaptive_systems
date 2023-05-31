@@ -96,25 +96,49 @@ class Agent:
             epochs: amount of episodes
         :return:
         """
-        c_state = self.maze.states[self.current_pos]
-        action = self.policy.decide_action_value(c_state, epsilon)
-        while c_state[2] is False:
-            next_pos = self.maze.step(self.current_pos, action)
-            next_state = self.maze.states[next_pos]
-            next_action = self.policy.decide_action_value(next_state, epsilon)
+        for i in range(epochs):
+            c_state = self.maze.states[self.current_pos]
+            action = self.policy.decide_action_value(self.current_pos, c_state, epsilon)
+            while c_state[2] is False:
+                next_pos = self.maze.step(self.current_pos, action)
+                next_state = self.maze.states[next_pos]
+                next_action = self.policy.decide_action_value(next_pos, next_state, epsilon)
 
+                c_state[3][action] = c_state[3][action] + lr * (next_state[0] + discount * (next_state[3][next_action] - c_state[3][action]))
+                action = next_action
+                self.current_pos = next_pos
+                c_state = next_state
 
+            self.set_current_pos((3, 2))
 
-            action = next_action
-            self.current_pos = next_pos
-            c_state = next_state
-
+        for state in self.maze.states:
+            print(state, self.maze.states[state][3])
+        self.show_sarsa_policy(epochs, lr, epsilon, discount)
 
 
     """
         SARSA IS POLICY OPBOUWEN, ALLES Q VALUES BEGINNNE OP 0, VOLG BEREKENING OP CANVAS. VOLG POLICY EPSILON GREEDY
         SARSA PAKT 2 keer een random keuze, qlearing 1, A wordt bij SARSA A'
     """
+
+    def show_sarsa_policy(self, epochs, lr, epsilon, discount):
+        maze = []
+        actions = {0: "up", 1: "down", 2: "left", 3: "right"}
+        for state in self.maze.states:
+            if self.maze.states[state][2] is False:
+                max_action = max(self.maze.states[state][3])
+                max_index = self.maze.states[state][3].index(max_action)
+                maze.append(actions[max_index])
+            else:
+                maze.append("Terminal")
+
+        maze = np.array(maze)
+        text = """Policy after {ep} episodes
+learning rate {lr}
+discount {dc}
+epsilon {es}"""
+        print(text.format(lr=lr, ep=epochs, es=epsilon, dc=discount))
+        print(maze.reshape(4, 4))
 
     def show_values(self, iteration):
         """
