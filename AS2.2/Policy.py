@@ -68,12 +68,11 @@ class Policy:
         action = [k for k, v in self.actions.items() if v == move]
         return action[0]
 
-    def decide_action_value(self, pos, state, epsilon):
+    def decide_action_value(self, state, epsilon):
         # x% chance to land in epsilon aka random
         rd_num = round(rd.random(), 2)
         if rd_num < epsilon:
             choice = rd.choice([0, 1, 2, 3])
-            next_pos = self.maze.step(pos, choice)
             return choice
 
         else:
@@ -81,8 +80,6 @@ class Policy:
             # if more than one action have the same max value, pick first
             max_action = max(state[3])
             greedy_action = state[3].index(max_action)
-            next_pos = self.maze.step(pos, greedy_action)
-            print(pos, next_pos,  state, greedy_action)
 
             return greedy_action
 

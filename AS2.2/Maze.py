@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 class Maze:
     """The Maze, contains functions for finding bordering and updating states, making a step and creating a new maze"""
     def __init__(self):
