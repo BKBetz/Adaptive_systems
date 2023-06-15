@@ -131,7 +131,7 @@ class Agent:
                 next_pos = self.maze.step(self.current_pos, action)
                 next_state = self.maze.states[next_pos]
                 best_action_value = max(next_state[3])
-                c_state[3][action] = c_state[3][action] + lr * (next_state[0] + discount * best_action_value- c_state[3][action])
+                c_state[3][action] = c_state[3][action] + lr * (next_state[0] + discount * best_action_value - c_state[3][action])
                 self.current_pos = next_pos
                 c_state = next_state
 
@@ -178,6 +178,7 @@ epsilon {es}"""
         maze = []
         matrix = []
         actions = {0: "up   ", 1: "down ", 2: "left ", 3: "right"}
+
         for state in self.maze.states:
             if self.maze.states[state][2] is False:
                 max_action = max(self.maze.states[state][3])
@@ -188,6 +189,19 @@ epsilon {es}"""
                 maze.append("Terminal")
                 matrix.append([0, 0, 0, 0])
 
+        test = np.array(matrix)
+        test = test.reshape(4, 4, 4)
+
+        fig, axs = plt.subplots(1, test.shape[0], figsize=(12, 4))
+
+        for i in range(test.shape[0]):
+            axs[i].imshow(test[i], cmap='viridis')
+            axs[i].set_title(f'row {i}')
+            for j in range(test.shape[1]):
+                for k in range(test.shape[2]):
+                    axs[i].text(k, j, str(round(test[i, j, k], 2)), ha='center', va='center', color='w')
+        plt.show()
+
         maze = np.array(maze)
         text = """Policy after {ep} episodes
         learning rate {lr}
@@ -195,7 +209,6 @@ epsilon {es}"""
         epsilon {es}"""
         print(text.format(lr=lr, ep=epochs, es=epsilon, dc=discount))
         print(maze.reshape(4, 4))
-
 
     def show_values(self, iteration):
         """

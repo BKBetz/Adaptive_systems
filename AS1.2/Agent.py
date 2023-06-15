@@ -54,7 +54,7 @@ class Agent:
                 uncomment to see the utility of all states after each iteration 
                 and also see which action is best in each state.
             """
-            # self.show_utility(iteration)
+            self.show_utility(iteration)
 
     def show_utility(self, iteration):
         """
