@@ -2,6 +2,7 @@ import random as rd
 import tensorflow as tf
 from tensorflow.keras import layers
 from keras.optimizers import Adam
+from keras.losses import MeanSquaredError
 import numpy as np
 
 
@@ -31,11 +32,11 @@ class Policy:
 
     def create_model(self, input_dms, actions, d1, d2, lr):
         model = tf.keras.Sequential()
-        model.add(layers.Dense(input_dms[0], input_shape=input_dms, name="inputlayer"))
+        model.add(layers.Dense(input_dms[0], input_shape=(32, 8), name="inputlayer"))
         model.add(layers.Dense(d1, activation="relu", name="hl1"))
         model.add(layers.Dense(d2, activation="relu", name="hl2"))
         model.add(layers.Dense(actions, name="outputlayer"))
-        model.compile(optimizer=Adam(learning_rate=lr), loss="mse")
+        model.compile(optimizer=Adam(learning_rate=lr), loss=MeanSquaredError())
 
         self.model = model
 
